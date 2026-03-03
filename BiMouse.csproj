@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Title>BiMouse</Title>
+    <AssemblyTitle>BiMouse</AssemblyTitle>
+    <AssemblyCopyright>© Hiyowa Records 2017-2026</AssemblyCopyright>
+    <Company>Hiyowa Records</Company>
+    <Product>BiMouse</Product>
+    <Version>1.0.0</Version>
+    <Authors>Hiyowa Kyobashi</Authors>
+    <ApplicationIcon>resources\icons\bimouse.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="resources\icons\bimouse.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="resources\icons\bimouse_left.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\icons\bimouse_right.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
