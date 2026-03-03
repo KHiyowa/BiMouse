@@ -1,0 +1,70 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        architecture: [x64]
+
+    env:
+      PROJECT_FILE_PATH: BiMouse.csproj
+      DOTNET_VERSION: '10.0.x'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_FILE_PATH }} -r win-${{ matrix.architecture }}
+
+      - name: Build
+        run: dotnet build ${{ env.PROJECT_FILE_PATH }} --configuration Release --no-restore -r win-${{ matrix.architecture }}
+
+      - name: Publish
+        run: dotnet publish ${{ env.PROJECT_FILE_PATH }} --configuration Release --runtime win-${{ matrix.architecture }} --output ./publish_temp/BiMouse --no-build
+
+      - name: Create zip archive
+        run: |
+          Compress-Archive -Path ./publish_temp/BiMouse -DestinationPath ./BiMouse-${{ matrix.architecture }}-${{ github.ref_name }}.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-asset-${{ matrix.architecture }}
+          path: ./BiMouse-${{ matrix.architecture }}-${{ github.ref_name }}.zip
+
+  create_release:
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download x64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-asset-x64
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          files: BiMouse-x64-${{ github.ref_name }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
